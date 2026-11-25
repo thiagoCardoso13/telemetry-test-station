@@ -39,7 +39,17 @@ The smallest packet is 18 bytes. The sequence count wraps from 16383 to 0.
 | TC(17,1) / TM(17,2) | Are you alive / yes | empty |
 
 The **request id** is the first four bytes (identification and sequence control) of the command
-being reported on. Error code values are defined with the simulator.
+being reported on.
+
+| Error code | Meaning | Reported in |
+|---|---|---|
+| 1 | Payload cannot be read | TM(1,2) |
+| 2 | Unsupported service | TM(1,2) |
+| 3 | Argument value out of range | TM(1,8) |
+| 4 | Valve is stuck | TM(1,8) |
+
+A datagram that is damaged, has another APID or is not a telecommand gets no answer, because its
+request id cannot be trusted. The receiver only counts it.
 
 ## Parameters, functions and events
 
