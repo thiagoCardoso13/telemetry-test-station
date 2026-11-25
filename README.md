@@ -3,7 +3,8 @@
 A small ground test station for a **simulated** pressurised tank: live telemetry, commands, alarms
 and automated test sequences traced to requirements.
 
-**Status:** skeleton (phase 0). See the [project plan](docs/PLAN.md).
+**Status:** the [link protocol](docs/PROTOCOL.md) is done (phase 1 of the
+[project plan](docs/PLAN.md)). The simulator comes next.
 
 All data is synthetic. This project has no connection to real hardware.
 
@@ -23,7 +24,7 @@ Python (3.12):
 cd station
 python3.12 -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
-ruff check . && pytest -q
+ruff check . && ruff format --check . && pytest -q
 ```
 
 Web API (Node 22):

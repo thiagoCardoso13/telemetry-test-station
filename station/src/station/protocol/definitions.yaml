@@ -1,0 +1,34 @@
+# Single source of truth for what travels on the link. See docs/PROTOCOL.md.
+apid: 100
+
+# Order matters: it is the order of the values in the housekeeping report.
+parameters:
+  - {name: tank_pressure, type: float32, unit: bar, low: 0.5, high: 8.0}
+  - {name: tank_temperature, type: float32, unit: degC, low: -20.0, high: 60.0}
+  - {name: fill_valve, type: uint8, unit: open}
+  - {name: vent_valve, type: uint8, unit: open}
+  - {name: relief_valve, type: uint8, unit: open}
+
+enums:
+  valve: {fill: 1, vent: 2}
+  fault: {leak: 1, stuck_valve: 2, noisy_sensor: 3}
+
+functions:
+  - id: 1
+    name: set_valve
+    args:
+      - {name: valve, type: uint8, enum: valve}
+      - {name: open, type: uint8}
+  - id: 2
+    name: inject_fault
+    args:
+      - {name: fault, type: uint8, enum: fault}
+      - {name: magnitude, type: float32}
+  - {id: 3, name: clear_faults, args: []}
+  - {id: 4, name: reset, args: []}
+
+# severity is the PUS service 5 subservice: 1 info, 2 low, 3 medium, 4 high
+events:
+  - {id: 1, name: relief_valve_opened, severity: 3}
+  - {id: 2, name: relief_valve_closed, severity: 1}
+  - {id: 3, name: fault_injected, severity: 1}
