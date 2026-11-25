@@ -107,12 +107,17 @@ class Store:
     async def add_command(self, sent_at: datetime, request_id: bytes, name: str, args: dict) -> int:
         async with self._lock:
             connection = await self._connect()
-            cursor = await connection.execute(
-                "INSERT INTO command (sent_at, request_id, name, args)"
-                " VALUES (%s, %s, %s, %s) RETURNING id",
-                (sent_at, request_id, name, Jsonb(args)),
-            )
-            return (await cursor.fetchone())[0]
+            async with connection.transaction(), connection.cursor() as cursor:
+                await cursor.execute(
+                    "INSERT INTO command (sent_at, request_id, name, args)"
+                    " VALUES (%s, %s, %s, %s) RETURNING id",
+                    (sent_at, request_id, name, Jsonb(args)),
+                )
+                command_id = (await cursor.fetchone())[0]
+                await self._notify(
+                    cursor, {"type": "command", "id": command_id, "status": "sent", "error": None}
+                )
+            return command_id
 
     async def prune(self, now: datetime, keep: timedelta) -> None:
         async with self._lock:

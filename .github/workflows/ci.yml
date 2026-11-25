@@ -31,6 +31,17 @@ jobs:
 
   api:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:test@localhost:5432/postgres
     defaults:
       run:
         working-directory: web/api
@@ -41,6 +52,23 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: web/api/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/dashboard
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/dashboard/package-lock.json
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
@@ -58,6 +86,16 @@ jobs:
             count=$(docker compose exec -T db psql -U station -d station -tAc \
               "SELECT count(*) FROM telemetry_sample" || echo 0)
             [ "${count:-0}" -gt 0 ] && exit 0
+            sleep 1
+          done
+          exit 1
+      - name: A command travels from the API to the tank and back
+        run: |
+          curl --fail http://127.0.0.1:3000/ | grep -q "Telemetry"
+          curl --fail -X POST http://127.0.0.1:3000/api/commands \
+            -H 'content-type: application/json' -d '{"name":"ping"}'
+          for attempt in $(seq 15); do
+            curl --fail http://127.0.0.1:3000/api/commands | grep -q '"status":"completed"' && exit 0
             sleep 1
           done
           exit 1

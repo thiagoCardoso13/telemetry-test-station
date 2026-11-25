@@ -10,6 +10,18 @@ DATABASE_URL=postgresql://user:password@localhost:5432/station python -m station
 Defaults: telemetry on `127.0.0.1:5002`, commands to `127.0.0.1:5001`, one hour of history
 (`--listen`, `--simulator`, `--keep-minutes`). `docker compose up` runs it for you.
 
+## Commands
+
+An internal HTTP interface (`--control`, default `127.0.0.1:5003`) is how the web API and the test
+runner send commands:
+
+| Request | Answer |
+|---|---|
+| `GET /definitions` | Parameters with limits, enums and functions |
+| `POST /commands` with `{"name": "set_valve", "args": {"valve": "fill", "open": 1}}` | `202 {"id": 7}`, `400` if the command cannot be encoded, `503` if the database is away |
+
+It has no authentication and is not published outside the containers.
+
 ## What gets stored
 
 | Table | Content |

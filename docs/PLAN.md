@@ -48,7 +48,7 @@ only a documented subset. No company name or branding appears in the repository.
 | Simulator, ingest, test runner | Python 3.12, asyncio, pytest, ruff |
 | Database | PostgreSQL |
 | Web API | Node 22, TypeScript, Fastify, WebSocket |
-| Dashboard | React, TypeScript, Vite, a charting library chosen in phase 4 |
+| Dashboard | React, TypeScript, Vite, uPlot |
 | Tests | pytest, Vitest, Playwright |
 | Delivery | Docker Compose (Linux containers), GitHub Actions |
 | Demo | Free tiers only: Render web service + Neon PostgreSQL |

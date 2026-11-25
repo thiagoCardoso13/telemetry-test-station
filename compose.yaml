@@ -14,7 +14,7 @@ services:
 
   ingest:
     build: ./station
-    command: python -m station.ingest --listen 0.0.0.0:5002 --simulator simulator:5001
+    command: python -m station.ingest --listen 0.0.0.0:5002 --simulator simulator:5001 --control 0.0.0.0:5003
     environment:
       DATABASE_URL: postgresql://station:${POSTGRES_PASSWORD:-station-local-dev}@db:5432/station
     depends_on:
@@ -31,7 +31,11 @@ services:
     restart: unless-stopped
 
   api:
-    build: ./web/api
+    build: ./web
+    environment:
+      DATABASE_URL: postgresql://station:${POSTGRES_PASSWORD:-station-local-dev}@db:5432/station
+      INGEST_URL: http://ingest:5003
+    restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:

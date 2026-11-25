@@ -3,9 +3,9 @@
 A small ground test station for a **simulated** pressurised tank: live telemetry, commands, alarms
 and automated test sequences traced to requirements.
 
-**Status:** the [link protocol](docs/PROTOCOL.md), the [simulator](docs/SIMULATOR.md) and the
-[ingest service](docs/INGEST.md) are done (phases 1 to 3 of the [project plan](docs/PLAN.md)).
-The dashboard comes next; until then the data is only visible in the database.
+**Status:** the [link protocol](docs/PROTOCOL.md), [simulator](docs/SIMULATOR.md),
+[ingest service](docs/INGEST.md) and [live dashboard](docs/WEB.md) are done (phases 1 to 4 of the
+[project plan](docs/PLAN.md)). Automated test sequences come next.
 
 All data is synthetic. This project has no connection to real hardware.
 
@@ -15,12 +15,8 @@ All data is synthetic. This project has no connection to real hardware.
 docker compose up --build
 ```
 
-This starts PostgreSQL, the simulator, the ingest service and the web API
-(<http://localhost:3000/health>). To see telemetry arriving:
-
-```bash
-docker compose exec db psql -U station -d station -c "SELECT * FROM telemetry_sample ORDER BY time DESC LIMIT 5"
-```
+Then open <http://localhost:3000>. Open the fill valve and watch the pressure rise; stick the relief
+valve while filling to make the high-pressure alarm fire.
 
 ## Develop
 
@@ -33,10 +29,10 @@ pip install -e ".[dev]"
 ruff check . && ruff format --check . && pytest -q
 ```
 
-Web API (Node 22):
+Web API and dashboard (Node 22), in `web/api` and again in `web/dashboard`:
 
 ```bash
 cd web/api
 npm ci
-npm run typecheck && npm test
+npm run typecheck && npm test && npm run build
 ```
