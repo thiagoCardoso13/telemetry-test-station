@@ -1,0 +1,14 @@
+title: A leak raises the low pressure alarm and a reset clears it
+steps:
+  - inject_fault: {fault: leak, magnitude: 0.5}
+  - wait_for: "tank_pressure < 0.5"
+    timeout: 8
+  - response:
+      when: "tank_pressure < 0.5"
+      then: "alarm tank_pressure low"
+      within: 1
+    requirement: REQ-008
+  - command: reset
+  - wait_for: "no alarm tank_pressure low"
+    timeout: 3
+    requirement: REQ-010

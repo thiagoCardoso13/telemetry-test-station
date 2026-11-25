@@ -1,0 +1,12 @@
+title: A stuck valve is reported, not silently ignored
+steps:
+  - inject_fault: {fault: stuck_valve, magnitude: 2}
+  - command: set_valve
+    args: {valve: vent, open: 1}
+    expect: failed
+    requirement: REQ-009
+  - check: "vent_valve == 0"
+    requirement: REQ-009
+  - command: clear_faults
+  - command: set_valve
+    args: {valve: vent, open: 1}

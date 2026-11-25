@@ -30,6 +30,21 @@ services:
       - ingest
     restart: unless-stopped
 
+  # docker compose run --rm runner
+  runner:
+    build: ./station
+    command: python -m station.runner --live --control http://ingest:5003
+    environment:
+      DATABASE_URL: postgresql://station:${POSTGRES_PASSWORD:-station-local-dev}@db:5432/station
+    depends_on:
+      db:
+        condition: service_healthy
+      ingest:
+        condition: service_started
+      simulator:
+        condition: service_started
+    profiles: [tests]
+
   api:
     build: ./web
     environment:

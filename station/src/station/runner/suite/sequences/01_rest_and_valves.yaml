@@ -1,0 +1,19 @@
+title: Rest state, filling and venting
+steps:
+  - always: "tank_pressure >= 1.95"
+    for: 2
+    requirement: REQ-001
+  - check: "tank_pressure <= 2.05"
+    requirement: REQ-001
+  - command: set_valve
+    args: {valve: fill, open: 1}
+  - wait_for: "tank_pressure > 4"
+    timeout: 5
+    requirement: REQ-002
+  - command: set_valve
+    args: {valve: fill, open: 0}
+  - command: set_valve
+    args: {valve: vent, open: 1}
+  - wait_for: "tank_pressure < 1"
+    timeout: 8
+    requirement: REQ-003

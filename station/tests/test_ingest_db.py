@@ -50,7 +50,7 @@ async def stop(*tasks):
 
 
 @contextlib.asynccontextmanager
-async def station(**options):
+async def station(*, period=0.01, **options):
     """Ingest and simulator wired to each other on free ports."""
     loop = asyncio.get_running_loop()
     ingest = Ingest(Store(URL), ("127.0.0.1", 0), **options)
@@ -59,7 +59,7 @@ async def station(**options):
     ingest_address = await ready
     ready = loop.create_future()
     simulator_task = asyncio.create_task(
-        serve(Device(), ("127.0.0.1", 0), ingest_address, period=0.01, ready=ready)
+        serve(Device(), ("127.0.0.1", 0), ingest_address, period=period, ready=ready)
     )
     ingest.simulator = await ready
     try:

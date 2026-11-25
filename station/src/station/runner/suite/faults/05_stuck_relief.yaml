@@ -1,0 +1,13 @@
+title: Fault demonstration, the relief valve is stuck while filling
+steps:
+  - inject_fault: {fault: stuck_valve, magnitude: 3}
+  - command: set_valve
+    args: {valve: fill, open: 1}
+  - always: "tank_pressure <= 8"
+    for: 20
+    requirement: REQ-006
+  - response:
+      when: "tank_pressure > 8"
+      then: "alarm tank_pressure high"
+      within: 1
+    requirement: REQ-007

@@ -1,0 +1,11 @@
+REQ-001: At rest the tank holds 2.0 bar within 0.05 bar.
+REQ-002: With the fill valve open the pressure passes 4 bar within 5 s.
+REQ-003: With the vent valve open the pressure falls below 1 bar within 6 s.
+REQ-004: The relief valve opens within 0.5 s of the pressure reaching 7.5 bar.
+REQ-005: The relief valve closes within 0.5 s of the pressure falling back to 6.5 bar.
+REQ-006: While filling, the pressure never exceeds 8 bar.
+REQ-007: A high pressure alarm is active within 1 s of the pressure exceeding 8 bar.
+REQ-008: A low pressure alarm is active within 1 s of the pressure falling below 0.5 bar.
+REQ-009: A command to a stuck valve is reported as failed.
+REQ-010: Resetting the tank clears the pressure alarms.
+REQ-011: A pressure sensor that stops being believable is reported to the operator.

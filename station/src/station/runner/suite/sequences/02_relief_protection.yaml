@@ -1,0 +1,18 @@
+title: Overfilling is caught by the relief valve
+steps:
+  - command: set_valve
+    args: {valve: fill, open: 1}
+  - always: "tank_pressure <= 8"
+    for: 20
+    requirement: REQ-006
+  - response:
+      when: "tank_pressure >= 7.5"
+      then: "relief_valve == 1"
+      within: 0.5
+    requirement: REQ-004
+  - response:
+      after: "relief_valve == 1"
+      when: "tank_pressure <= 6.5"
+      then: "relief_valve == 0"
+      within: 0.5
+    requirement: REQ-005

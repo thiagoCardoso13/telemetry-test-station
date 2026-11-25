@@ -76,8 +76,8 @@ Exact byte layouts go in `docs/PROTOCOL.md` in phase 1.
 - `command(id, sent_at, name, args, status)`
 - `alarm(id, parameter, bound, value, raised_at, cleared_at)`
 - `link_counter(name, value)`
-- `test_run(id, sequence, started_at, finished_at, result)`
-- `test_step(run_id, index, requirement_id, expected, observed, passed)`
+
+Test results go into the report, not the database.
 
 ## 8. Test sequences and traceability
 

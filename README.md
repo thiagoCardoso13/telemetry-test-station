@@ -4,8 +4,9 @@ A small ground test station for a **simulated** pressurised tank: live telemetry
 and automated test sequences traced to requirements.
 
 **Status:** the [link protocol](docs/PROTOCOL.md), [simulator](docs/SIMULATOR.md),
-[ingest service](docs/INGEST.md) and [live dashboard](docs/WEB.md) are done (phases 1 to 4 of the
-[project plan](docs/PLAN.md)). Automated test sequences come next.
+[ingest service](docs/INGEST.md), [live dashboard](docs/WEB.md) and
+[test sequences](docs/TESTING.md) are done (phases 1 to 5 of the [project plan](docs/PLAN.md)).
+End-to-end browser tests and a public demo come next.
 
 All data is synthetic. This project has no connection to real hardware.
 
@@ -17,6 +18,17 @@ docker compose up --build
 
 Then open <http://localhost:3000>. Open the fill valve and watch the pressure rise; stick the relief
 valve while filling to make the high-pressure alarm fire.
+
+## Test sequences
+
+With the station running:
+
+```bash
+docker compose run --rm runner
+```
+
+It prints each requirement as passed, failed, not run or not covered. See
+[TESTING.md](docs/TESTING.md).
 
 ## Develop
 
