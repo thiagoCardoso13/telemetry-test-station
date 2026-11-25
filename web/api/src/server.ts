@@ -18,6 +18,7 @@ const app = await buildApp({
   ingest: ingestClient(process.env.INGEST_URL ?? "http://127.0.0.1:5003"),
   hub,
   staticDir: process.env.STATIC_DIR,
+  commandsPerMinute: Number(process.env.COMMANDS_PER_MINUTE || 30),
 });
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

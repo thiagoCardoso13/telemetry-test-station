@@ -12,7 +12,7 @@ service. It writes nothing and holds no logic about the tank.
 | `GET /api/alarms` | Latest 20 alarms, active first |
 | `GET /api/commands` | Latest 15 commands with their status |
 | `GET /api/link` | Link counters |
-| `POST /api/commands` | `{"name": ..., "args": {...}}`, limited to 30 per minute per address |
+| `POST /api/commands` | `{"name": ..., "args": {...}}`, limited to 30 per minute per address (`COMMANDS_PER_MINUTE`) |
 | `GET /api/live` (WebSocket) | The `NOTIFY` messages described in [INGEST.md](INGEST.md) |
 
 At most 100 live viewers; one that falls behind skips messages instead of queueing them.

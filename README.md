@@ -5,8 +5,8 @@ and automated test sequences traced to requirements.
 
 **Status:** the [link protocol](docs/PROTOCOL.md), [simulator](docs/SIMULATOR.md),
 [ingest service](docs/INGEST.md), [live dashboard](docs/WEB.md) and
-[test sequences](docs/TESTING.md) are done (phases 1 to 5 of the [project plan](docs/PLAN.md)).
-End-to-end browser tests and a public demo come next.
+[test sequences](docs/TESTING.md) are done (phases 1 to 6 of the [project plan](docs/PLAN.md),
+including end-to-end browser tests). A public demo comes next.
 
 All data is synthetic. This project has no connection to real hardware.
 

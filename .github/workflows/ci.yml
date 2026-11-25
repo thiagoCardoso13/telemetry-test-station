@@ -107,5 +107,21 @@ jobs:
           exit 1
       - name: Test sequences on the running station
         run: docker compose run --build --rm runner
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/e2e/package-lock.json
+      # uses the Google Chrome that comes with the runner image
+      - name: Browser tests on the running station
+        working-directory: web/e2e
+        run: npm ci && npm run typecheck && npm test
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: web/e2e/playwright-report
       - if: failure()
         run: docker compose logs

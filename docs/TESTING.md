@@ -61,3 +61,19 @@ Two requirements are **not covered** by the normal run, on purpose and visibly:
 - Results are written to the report, not stored in the database.
 - The suite is checked against a deliberately broken tank (wrong relief pressure, slow alarms, a
   stuck valve that moves) to make sure it notices.
+
+## Browser tests
+
+Four Playwright tests drive the dashboard against the running station, covering the whole chain:
+command, simulator, telemetry, command status and alarms. They use the installed Google Chrome.
+
+```bash
+docker compose up --build --detach --wait
+cd web/e2e
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
+npm test
+```
+
+They share the single tank, so they run one at a time and reset it before and after each test.
+One run sends about 15 commands; when repeating runs, raise the rate limit with
+`COMMANDS_PER_MINUTE=1000 docker compose up`.
