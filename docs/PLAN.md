@@ -72,9 +72,10 @@ Exact byte layouts go in `docs/PROTOCOL.md` in phase 1.
 ## 7. Data model
 
 - `telemetry_sample(time, parameter, value)` — indexed by parameter and time, pruned by age
-- `packet_log(time, direction, service, subservice, sequence, valid)`
+- `packet_log(time, direction, service, subservice, sequence, valid, detail)` — not housekeeping
 - `command(id, sent_at, name, args, status)`
-- `alarm(id, parameter, raised_at, cleared_at, severity)`
+- `alarm(id, parameter, bound, value, raised_at, cleared_at)`
+- `link_counter(name, value)`
 - `test_run(id, sequence, started_at, finished_at, result)`
 - `test_step(run_id, index, requirement_id, expected, observed, passed)`
 

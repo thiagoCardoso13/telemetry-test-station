@@ -12,6 +12,24 @@ services:
       interval: 5s
       retries: 10
 
+  ingest:
+    build: ./station
+    command: python -m station.ingest --listen 0.0.0.0:5002 --simulator simulator:5001
+    environment:
+      DATABASE_URL: postgresql://station:${POSTGRES_PASSWORD:-station-local-dev}@db:5432/station
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # UDP ports are not published: the link has no authentication.
+  simulator:
+    build: ./station
+    command: python -m station.simulator --listen 0.0.0.0:5001 --telemetry ingest:5002 --seed 1
+    depends_on:
+      - ingest
+    restart: unless-stopped
+
   api:
     build: ./web/api
     ports:

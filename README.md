@@ -3,8 +3,9 @@
 A small ground test station for a **simulated** pressurised tank: live telemetry, commands, alarms
 and automated test sequences traced to requirements.
 
-**Status:** the [link protocol](docs/PROTOCOL.md) and the [simulator](docs/SIMULATOR.md) are done
-(phases 1 and 2 of the [project plan](docs/PLAN.md)). Receiving and storing telemetry comes next.
+**Status:** the [link protocol](docs/PROTOCOL.md), the [simulator](docs/SIMULATOR.md) and the
+[ingest service](docs/INGEST.md) are done (phases 1 to 3 of the [project plan](docs/PLAN.md)).
+The dashboard comes next; until then the data is only visible in the database.
 
 All data is synthetic. This project has no connection to real hardware.
 
@@ -14,17 +15,12 @@ All data is synthetic. This project has no connection to real hardware.
 docker compose up --build
 ```
 
-The web API answers on <http://localhost:3000/health>.
-
-## Simulator
-
-After installing the Python package (below):
+This starts PostgreSQL, the simulator, the ingest service and the web API
+(<http://localhost:3000/health>). To see telemetry arriving:
 
 ```bash
-python -m station.simulator --seed 1
+docker compose exec db psql -U station -d station -c "SELECT * FROM telemetry_sample ORDER BY time DESC LIMIT 5"
 ```
-
-It sends binary telemetry over UDP; nothing displays it yet.
 
 ## Develop
 
