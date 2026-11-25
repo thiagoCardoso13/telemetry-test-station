@@ -19,6 +19,7 @@ const app = await buildApp({
   hub,
   staticDir: process.env.STATIC_DIR,
   commandsPerMinute: Number(process.env.COMMANDS_PER_MINUTE || 30),
+  proxyHops: Number(process.env.PROXY_HOPS || 0),
 });
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

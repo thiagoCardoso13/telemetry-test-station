@@ -78,6 +78,24 @@ test("commands are rate limited", async () => {
   expect(sent).toHaveLength(2);
 });
 
+test("all viewers together are limited too, whatever address they claim", async () => {
+  const { sent } = await start({ totalCommandsPerMinute: 2, proxyHops: 1 });
+
+  const statuses = [];
+  for (let i = 0; i < 3; i++) {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/commands",
+      headers: { "x-forwarded-for": `10.0.0.${i}` },
+      payload: { name: "ping" },
+    });
+    statuses.push(response.statusCode);
+  }
+
+  expect(statuses).toEqual([202, 202, 429]);
+  expect(sent).toHaveLength(2);
+});
+
 test("telemetry window is validated and defaults to two minutes", async () => {
   const telemetry = vi.fn(async () => []);
   await start({ reader: { ...emptyReader, telemetry } });
@@ -132,4 +150,21 @@ test("notifications reach a websocket viewer", async () => {
 
   expect(await received).toBe('{"type":"alarm"}');
   socket.terminate();
+});
+
+test("with one proxy, only the address it added counts", async () => {
+  await start({ commandsPerMinute: 1, totalCommandsPerMinute: 100, proxyHops: 1 });
+  const from = async (forwarded: string) =>
+    (
+      await app.inject({
+        method: "POST",
+        url: "/api/commands",
+        headers: { "x-forwarded-for": forwarded },
+        payload: { name: "ping" },
+      })
+    ).statusCode;
+
+  expect(await from("1.1.1.1, 9.9.9.9")).toBe(202);
+  expect(await from("2.2.2.2, 9.9.9.9")).toBe(429); // a made-up first address changes nothing
+  expect(await from("8.8.8.8")).toBe(202);
 });

@@ -1,0 +1,18 @@
+# Render blueprint: one free web service built from deploy/Dockerfile. See docs/DEPLOY.md.
+services:
+  - type: web
+    name: telemetry-test-station
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: DATABASE_URL
+        sync: false # typed into Render's dashboard, never stored in the repository
+      - key: KEEP_MINUTES
+        value: "10"
+      - key: PROXY_HOPS
+        value: "1"

@@ -22,10 +22,18 @@ export function useStation() {
     let retry: number | undefined;
     let lastTelemetry = 0;
     let closed = false;
+    let haveDefinitions = false;
 
     // A failed read keeps what is on screen; the next refresh tries again.
     const load = <T>(path: string, apply: (value: T) => void) =>
       get<T>(path).then((value) => !closed && apply(value), () => {});
+    // the API can be up before ingest is, so this is asked again until it works
+    const loadDefinitions = () =>
+      load<Definitions>("/api/definitions", (value) => {
+        if (!value.parameters) return;
+        haveDefinitions = true;
+        setDefinitions(value);
+      });
     const loadAlarms = () => load<Alarm[]>("/api/alarms", setAlarms);
     const loadCommands = () => load<Command[]>("/api/commands", setCommands);
     const loadCounters = () => load<Record<string, number>>("/api/link", setCounters);
@@ -35,7 +43,7 @@ export function useStation() {
       socket = new WebSocket(`${scheme}://${location.host}/api/live`);
       // history is read after subscribing, so nothing falls between the two
       socket.onopen = () => {
-        load<Definitions>("/api/definitions", setDefinitions);
+        loadDefinitions();
         load<Point[]>("/api/telemetry?seconds=120", (history) =>
           setPoints((current) => merge(current, history)),
         );
@@ -65,6 +73,7 @@ export function useStation() {
       if (socket?.readyState !== WebSocket.OPEN) return;
       if (Date.now() - lastTelemetry > STALE_MS) setLink("stale");
       loadCounters();
+      if (!haveDefinitions) loadDefinitions();
     }, 2000);
 
     return () => {

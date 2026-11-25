@@ -12,6 +12,10 @@ export interface Dependencies {
   hub?: Hub;
   staticDir?: string;
   commandsPerMinute?: number;
+  /** For everyone together: the tank is shared, and addresses can be faked behind a proxy. */
+  totalCommandsPerMinute?: number;
+  /** How many reverse proxies in front of the server add to X-Forwarded-For. */
+  proxyHops?: number;
 }
 
 const commandSchema = {
@@ -30,8 +34,12 @@ const commandSchema = {
 
 export async function buildApp(dependencies: Dependencies) {
   const { reader, ingest, hub = new Hub(), staticDir, commandsPerMinute = 30 } = dependencies;
+  const { totalCommandsPerMinute = commandsPerMinute * 4, proxyHops = 0 } = dependencies;
+  let windowStart = 0;
+  let inWindow = 0;
   const app = Fastify({
     bodyLimit: 4096,
+    trustProxy: proxyHops ? (_address: string, hop: number) => hop < proxyHops : false,
     // reject wrong input instead of silently converting or dropping it
     ajv: { customOptions: { coerceTypes: false, removeAdditional: false, allowUnionTypes: true } },
   });
@@ -81,6 +89,13 @@ export async function buildApp(dependencies: Dependencies) {
       config: { rateLimit: { max: commandsPerMinute, timeWindow: "1 minute" } },
     },
     async (request, reply) => {
+      if (Date.now() - windowStart >= 60_000) {
+        windowStart = Date.now();
+        inWindow = 0;
+      }
+      if (++inWindow > totalCommandsPerMinute) {
+        return reply.status(429).send({ error: "the station is busy" });
+      }
       const { status, body } = await ingest.send(request.body);
       return reply.status(status).send(body);
     },
