@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: station
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-station-local-dev}
+      POSTGRES_DB: station
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U station -d station"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./web/api
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  db-data:
