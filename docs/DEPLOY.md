@@ -49,11 +49,11 @@ Later pushes to `main` deploy after CI passes.
 ## Checked on the real services (26 November 2026)
 
 - The blueprint deploys, and the four browser tests pass against the public address.
+- `PROXY_HOPS=1` split one visitor's requests over several rate limits. With `3`, requests from one
+  address shared one limit, and made-up `X-Forwarded-For` values did not escape it.
 
-## Known issue and open points
+## Not verified
 
-- `PROXY_HOPS=1` does not match Render's proxies: requests from one address were counted in
-  several separate rate limits, so the per-address limit is not reliable. The limit for everyone
-  together does not depend on the address.
-- Whether a viewer who only watches keeps the service awake is not verified. The page reconnects
-  by itself.
+- That visitors with different addresses get separate limits: it was only tried from one network.
+  The limit for everyone together does not depend on the address.
+- Whether a viewer who only watches keeps the service awake. The page reconnects by itself.
