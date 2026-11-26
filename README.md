@@ -3,6 +3,9 @@
 A small ground test station for a **simulated** pressurised tank: live telemetry, commands, alarms
 and automated test sequences traced to requirements.
 
+**Live demo:** <https://telemetry-test-station.onrender.com> (free hosting: it sleeps when idle and the
+first visit takes about a minute; the tank is shared by all visitors).
+
 ![The dashboard while the tank fills, the relief valve cycles, then sticks and raises an alarm](docs/demo.gif)
 
 *The tank fills, the relief valve holds the pressure, then it is stuck on purpose and the high

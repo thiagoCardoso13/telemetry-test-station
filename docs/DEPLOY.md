@@ -4,6 +4,8 @@ One free [Render](https://render.com) web service runs the whole station
 ([`deploy/Dockerfile`](../deploy/Dockerfile)) with a free [Neon](https://neon.com) PostgreSQL.
 Neither needs a payment card at the time of writing.
 
+The demo is at <https://telemetry-test-station.onrender.com>.
+
 ## 1. Database (Neon)
 
 1. Create a project in the Frankfurt region.
@@ -44,9 +46,14 @@ Later pushes to `main` deploy after CI passes.
 | Neon | 100 compute hours a month per project | Used only while the service is awake |
 | Neon | 5 GB of data transfer a month | A history load is under 0.5 MB |
 
-## Not yet verified on the real services
+## Checked on the real services (26 November 2026)
 
-- The blueprint has not been applied.
-- Whether `PROXY_HOPS=1` matches Render's proxies. If it does not, visitors may share one rate
-  limit; the limit for everyone together holds either way.
-- Whether a viewer who only watches keeps the service awake. The page reconnects by itself.
+- The blueprint deploys, and the four browser tests pass against the public address.
+
+## Known issue and open points
+
+- `PROXY_HOPS=1` does not match Render's proxies: requests from one address were counted in
+  several separate rate limits, so the per-address limit is not reliable. The limit for everyone
+  together does not depend on the address.
+- Whether a viewer who only watches keeps the service awake is not verified. The page reconnects
+  by itself.
